@@ -30,7 +30,7 @@ if __name__ == '__main__':
     scope = ['https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/drive']
 
     # add credentials to the account
-    creds = ServiceAccountCredentials.from_json_keyfile_name(create_keyfile_dict(), scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(create_keyfile_dict(), scope)
 
     # authorize the clientsheet 
     client = gspread.authorize(creds)
