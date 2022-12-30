@@ -2,5 +2,43 @@ name: Update Monster Life Database
 
 on:
   schedule:
-    - cron: '0 0 1 * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
+
+jobs:
+  update_database:
+    name: Update Monster Life periodically
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Script
+        env:
+          PASSWORD_STRING: ${{ secrets.PASSWORD_STRING }}
+          HOST_STRING: ${{ secrets.HOST_STRING }}
+          SHEET_TYPE: ${{ secrets.SHEET_TYPE }}
+          SHEET_PROJECT_ID: ${{ secrets.SHEET_PROJECT_ID }}
+          SHEET_PRIVATE_KEY_ID: ${{ secrets.SHEET_PRIVATE_KEY_ID }}
+          SHEET_PRIVATE_KEY: ${{ secrets.SHEET_PRIVATE_KEY }}
+          SHEET_CLIENT_EMAIL: ${{ secrets.SHEET_CLIENT_EMAIL }}
+          SHEET_CLIENT_ID: ${{ secrets.SHEET_CLIENT_ID }}
+          SHEET_AUTH_URI: ${{ secrets.SHEET_AUTH_URI }}
+          SHEET_TOKEN_URI: ${{ secrets.SHEET_TOKEN_URI }}
+          SHEET_AUTH_PROVIDER_X509_CERT_URL: ${{ secrets.SHEET_AUTH_PROVIDER_X509_CERT_URL }}
+          SHEET_CLIENT_X509_CERT_URL: ${{ secrets.SHEET_CLIENT_X509_CERT_URL }}
+        run: |
+          echo "${{ secrets.SERVER_CA }}" | base64 --decode > server-ca.pem
+          echo "${{ secrets.CLIENT_CERT }}" | base64 --decode > client-cert.pem
+          echo "${{ secrets.CLIENT_KEY }}" | base64 --decode > client-key.pem
+          python monlife.py
+

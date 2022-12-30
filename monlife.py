@@ -47,9 +47,9 @@ if __name__ == '__main__':
         'password': PASSWORD_STRING,
         'host': HOST_STRING,
         'client_flags': [ClientFlag.SSL],
-        'ssl_ca': 'ssl/server-ca.pem',
-        'ssl_cert': 'ssl/client-cert.pem',
-        'ssl_key': 'ssl/client-key.pem'
+        'ssl_ca': 'server-ca.pem',
+        'ssl_cert': 'client-cert.pem',
+        'ssl_key': 'client-key.pem'
     }
 
     # now we establish our connection
