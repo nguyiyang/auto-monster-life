@@ -41,4 +41,7 @@ jobs:
           echo "${{ secrets.CLIENT_CERT }}" | base64 --decode > client-cert.pem
           echo "${{ secrets.CLIENT_KEY }}" | base64 --decode > client-key.pem
           python monlife.py
+          rm server-ca.pem
+          rm client-cert.pem
+          rm client-key.pem
 
