@@ -64,7 +64,7 @@ if __name__ == '__main__':
     cnxn = mysql.connector.connect(**config)
     cursor = cnxn.cursor()
 
-    cursor.execute("DROP TABLE {tab}".format(tab=monster_name))
+    cursor.execute("DROP TABLE IF EXISTS {tab}".format(tab=monster_name))
 
     cursor.execute("CREATE TABLE IF NOT EXISTS {tab} (name VARCHAR(255), expiry VARCHAR(255), blank_first VARCHAR(255), blank_second VARCHAR(255), alive VARCHAR(255), expired VARCHAR(255), last_updated VARCHAR(255), earliest_expiry VARCHAR(255));".format(tab=monster_name))
 
@@ -77,8 +77,4 @@ if __name__ == '__main__':
 
     cnxn.commit()
 
-    cursor.execute("SELECT * FROM elite_bloodfang;")
-    res = cursor.fetchall()
-    for row in res:
-        print(row)
     cnxn.close()
