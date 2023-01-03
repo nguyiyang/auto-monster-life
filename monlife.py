@@ -69,6 +69,9 @@ if __name__ == '__main__':
         data = data[6:]
         monster_name = sheet_instance.title
         monster_name = monster_name.replace(' ', '_')
+        monster_name = monster_name.replace('-', '_')
+        monster_name = monster_name.replace('&', 'and')
+        monster_name = monster_name.replace('.', '')
         monster_name = monster_name.lower()
 
         cursor.execute("DROP TABLE IF EXISTS {tab}".format(tab=monster_name))
