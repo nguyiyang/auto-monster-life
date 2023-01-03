@@ -72,6 +72,8 @@ if __name__ == '__main__':
         monster_name = monster_name.replace('-', '_')
         monster_name = monster_name.replace('&', 'and')
         monster_name = monster_name.replace('.', '')
+        monster_name = monster_name.replace('(', '')
+        monster_name = monster_name.replace('(', '')
         monster_name = monster_name.lower()
 
         cursor.execute("DROP TABLE IF EXISTS {tab}".format(tab=monster_name))
