@@ -3,6 +3,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 import mysql.connector
 from mysql.connector.constants import ClientFlag
 import os
+import time
 
 def create_keyfile_dict():
     variables_keys = {
@@ -61,6 +62,8 @@ if __name__ == '__main__':
     cursor = cnxn.cursor()
 
     for i in range(9, len(worksheet_list)):
+        if i % 30 == 0:
+            time.sleep(60)
         sheet_instance = worksheet_list[i]
         data = sheet_instance.get_all_values()
         data = data[6:]
