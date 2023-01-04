@@ -1,9 +1,8 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-import mysql.connector
-from mysql.connector.constants import ClientFlag
 import os
 import time
+import psycopg2
 
 def create_keyfile_dict():
     variables_keys = {
@@ -22,6 +21,8 @@ def create_keyfile_dict():
   
 if __name__ == '__main__':
 
+    DB_CONNECTION_STRING = os.environ["DB_CONNECTION_STRING"]
+
     # fetches data from the sheets
     # define the scope
     scope = ['https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/drive']
@@ -36,30 +37,8 @@ if __name__ == '__main__':
     sheet = client.open_by_key('1um4UKZcYwRwRSjQh8i_5ujsJEt9AtDiR5nIZsD_9JtY')
     worksheet_list = sheet.worksheets()
 
-    PASSWORD_STRING = os.environ['PASSWORD_STRING']
-    HOST_STRING = os.environ['HOST_STRING']
-
-    config = {
-        'user': 'root',
-        'password': PASSWORD_STRING,
-        'host': HOST_STRING,
-        'client_flags': [ClientFlag.SSL],
-        'ssl_ca': 'server-ca.pem',
-        'ssl_cert': 'client-cert.pem',
-        'ssl_key': 'client-key.pem'
-    }
-
-    # establish connection
-    cnxn = mysql.connector.connect(**config)
-
-
-    cursor = cnxn.cursor()  # initialize connection cursor
-    cursor.execute('CREATE DATABASE IF NOT EXISTS testdb')  # create a new 'testdb' database
-    cnxn.close()
-
-    config['database'] = 'testdb'  # add new database to config dict
-    cnxn = mysql.connector.connect(**config)
-    cursor = cnxn.cursor()
+    conn = psycopg2.connect(DB_CONNECTION_STRING)
+    cur = conn.cursor()
 
     for i in range(9, len(worksheet_list)):
         if i % 30 == 0:
@@ -73,20 +52,25 @@ if __name__ == '__main__':
         monster_name = monster_name.replace('&', 'and')
         monster_name = monster_name.replace('.', '')
         monster_name = monster_name.replace('(', '')
-        monster_name = monster_name.replace('(', '')
+        monster_name = monster_name.replace(')', '')
         monster_name = monster_name.lower()
+        print(monster_name)
 
-        cursor.execute("DROP TABLE IF EXISTS {tab}".format(tab=monster_name))
+        command = "DROP TABLE IF EXISTS {tab}".format(tab=monster_name)
 
-        cursor.execute("CREATE TABLE IF NOT EXISTS {tab} (name VARCHAR(255), expiry VARCHAR(255), blank_first VARCHAR(255), blank_second VARCHAR(255), alive VARCHAR(255), expired VARCHAR(255), last_updated VARCHAR(255), earliest_expiry VARCHAR(255));".format(tab=monster_name))
+        cur.execute(command)
 
-        cnxn.commit()
+        command = "CREATE TABLE IF NOT EXISTS {tab} (name VARCHAR(255), expiry VARCHAR(255), blank_first VARCHAR(255), blank_second VARCHAR(255), alive VARCHAR(255), expired VARCHAR(255), last_updated VARCHAR(255), earliest_expiry VARCHAR(255));".format(tab=monster_name)
+
+        cur.execute(command)
+        # commit the changes
+        conn.commit()
 
         sql = "INSERT INTO {tab} (name, expiry, blank_first, blank_second, alive, expired, last_updated, earliest_expiry) VALUES (%s, %s,%s,%s,%s,%s,%s,%s)".format(tab=monster_name)
 
+        cur.executemany(sql,data)
 
-        cursor.executemany(sql, data)
+        conn.commit()
 
-        cnxn.commit()
-
-    cnxn.close()
+    # close communication with the PostgreSQL database server
+    cur.close()
