@@ -24,8 +24,7 @@ jobs:
 
       - name: Run Script
         env:
-          PASSWORD_STRING: ${{ secrets.PASSWORD_STRING }}
-          HOST_STRING: ${{ secrets.HOST_STRING }}
+          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
           SHEET_TYPE: ${{ secrets.SHEET_TYPE }}
           SHEET_PROJECT_ID: ${{ secrets.SHEET_PROJECT_ID }}
           SHEET_PRIVATE_KEY_ID: ${{ secrets.SHEET_PRIVATE_KEY_ID }}
@@ -37,11 +36,5 @@ jobs:
           SHEET_AUTH_PROVIDER_X509_CERT_URL: ${{ secrets.SHEET_AUTH_PROVIDER_X509_CERT_URL }}
           SHEET_CLIENT_X509_CERT_URL: ${{ secrets.SHEET_CLIENT_X509_CERT_URL }}
         run: |
-          echo "${{ secrets.SERVER_CA }}" | base64 --decode > server-ca.pem
-          echo "${{ secrets.CLIENT_CERT }}" | base64 --decode > client-cert.pem
-          echo "${{ secrets.CLIENT_KEY }}" | base64 --decode > client-key.pem
           python monlife.py
-          rm server-ca.pem
-          rm client-cert.pem
-          rm client-key.pem
 
